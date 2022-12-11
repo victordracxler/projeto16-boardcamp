@@ -5,8 +5,9 @@ export async function getGames(req, res) {
 
 	try {
 		const games = await connection.query(`
-        SELECT *
-        FROM games
+        SELECT games.id, games.name, games.image, games."stockTotal", games."categoryId", games."pricePerDay", categories.name AS "categoryName"
+        FROM games JOIN categories
+        ON games."categoryId" = categories.id;
         `);
 
 		res.send(games.rows);
@@ -23,7 +24,7 @@ export async function addGame(req, res) {
 		await connection.query(
 			`
         INSERT INTO games (name, image, "stockTotal", "categoryId", "pricePerDay")
-        VALUES ($1, $2, $3, $4, $5)
+        VALUES ($1, $2, $3, $4, $5);
         `,
 			[name, image, stockTotal, categoryId, pricePerDay]
 		);
