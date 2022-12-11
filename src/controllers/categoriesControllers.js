@@ -4,7 +4,7 @@ export async function getAllCategories(req, res) {
 	try {
 		const categories = await connection.query(`
         SELECT *
-        FROM categories
+        FROM categories;
         `);
 
 		res.send(categories.rows);
@@ -27,7 +27,7 @@ export async function insertCategory(req, res) {
 			`
         SELECT *
         FROM categories
-        WHERE name = $1
+        WHERE name = $1;
         `,
 			[name]
 		);
@@ -40,7 +40,7 @@ export async function insertCategory(req, res) {
 		const insertion = await connection.query(
 			`
         INSERT INTO categories (name)
-        VALUES ($1)
+        VALUES ($1);
         `,
 			[name]
 		);
