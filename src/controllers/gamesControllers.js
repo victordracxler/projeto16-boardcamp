@@ -4,11 +4,13 @@ export async function getGames(req, res) {
 	const name = req.query.name;
 
 	try {
-		const games = await connection.query(`
+		const games = await connection.query(
+			`
         SELECT games.id, games.name, games.image, games."stockTotal", games."categoryId", games."pricePerDay", categories.name AS "categoryName"
         FROM games JOIN categories
-        ON games."categoryId" = categories.id;
-        `);
+        ON games."categoryId" = categories.id
+        ;`
+		);
 
 		res.send(games.rows);
 	} catch (err) {
