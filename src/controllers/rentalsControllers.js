@@ -66,7 +66,6 @@ FROM rentals JOIN customers
 		const rentals = await connection.query(
 			queryExists ? stringWithQuery : stringNoQuery
 		);
-		console.log(rentals.rows);
 
 		res.send(rentals.rows);
 	} catch (err) {
