@@ -45,7 +45,6 @@ export async function insertCategory(req, res) {
 			[name]
 		);
 
-		console.log(insertion);
 		res.sendStatus(201);
 	} catch (err) {
 		console.log(err);

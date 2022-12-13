@@ -3,13 +3,21 @@ import { connection } from '../database/db.js';
 export async function getGames(req, res) {
 	const name = req.query.name;
 
+	const stringWithQuery = `
+	SELECT games.id, games.name, games.image, games."stockTotal", games."categoryId", games."pricePerDay", categories.name AS "categoryName"
+	FROM games JOIN categories
+	ON games."categoryId" = categories.id
+	WHERE LOWER (games.name) LIKE '${name}%'
+	;`;
+	const stringNoQuery = `
+	SELECT games.id, games.name, games.image, games."stockTotal", games."categoryId", games."pricePerDay", categories.name AS "categoryName"
+	FROM games JOIN categories
+	ON games."categoryId" = categories.id
+	;`;
+
 	try {
 		const games = await connection.query(
-			`
-        SELECT games.id, games.name, games.image, games."stockTotal", games."categoryId", games."pricePerDay", categories.name AS "categoryName"
-        FROM games JOIN categories
-        ON games."categoryId" = categories.id
-        ;`
+			name ? stringWithQuery : stringNoQuery
 		);
 
 		res.send(games.rows);
