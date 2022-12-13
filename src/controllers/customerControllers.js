@@ -3,11 +3,20 @@ import { connection } from '../database/db.js';
 export async function getCustomers(req, res) {
 	const cpf = req.query.cpf;
 
+	const stringWithQuery = `
+	SELECT *
+    FROM customers
+	WHERE cpf LIKE '${cpf}%'
+	;`;
+	const stringNoQuery = `
+	SELECT *
+    FROM customers
+	;`;
+
 	try {
-		const customers = await connection.query(`
-        SELECT *
-        FROM customers
-        `);
+		const customers = await connection.query(
+			cpf ? stringWithQuery : stringNoQuery
+		);
 
 		res.send(customers.rows);
 	} catch (err) {
