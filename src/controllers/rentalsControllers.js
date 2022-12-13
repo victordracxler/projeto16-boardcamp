@@ -124,3 +124,57 @@ export async function createRental(req, res) {
 		res.sendStatus(500);
 	}
 }
+
+export async function returnRental(req, res) {
+	const { id } = req.params;
+	const now = new Date();
+	let fee = null;
+
+	try {
+		const rental = await connection.query(
+			`
+		SELECT * 
+		FROM rentals
+		WHERE id = $1;
+		`,
+			[id]
+		);
+
+		if (rental.rows.length === 0) {
+			res.sendStatus(404);
+			return;
+		}
+
+		if (rental.rows[0].returnDate != null) {
+			res.sendStatus(400);
+			return;
+		}
+
+		const expectedReturnMs =
+			rental.rows[0].rentDate.getTime() +
+			rental.rows[0].daysRented * (1000 * 60 * 60 * 24);
+		const expectedReturnDate = new Date(expectedReturnMs);
+
+		const diff = now.getTime() - expectedReturnDate.getTime();
+		const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+		if (now > expectedReturnDate) {
+			fee =
+				diffDays *
+				(rental.rows[0].originalPrice / rental.rows[0].daysRented);
+		}
+
+		await connection.query(
+			`
+		UPDATE rentals
+		SET "returnDate"=$1, "delayFee"=$2
+		WHERE id=$3;`,
+			[now, fee, id]
+		);
+
+		res.sendStatus(200);
+	} catch (err) {
+		console.log(err);
+		res.sendStatus(500);
+	}
+}
