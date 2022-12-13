@@ -54,6 +54,20 @@ export async function insertCustomer(req, res) {
 	const { name, phone, cpf, birthday } = req.body;
 
 	try {
+		const customerExists = await connection.query(
+			`
+        SELECT cpf
+        FROM customers
+        WHERE cpf = $1
+        `,
+			[cpf]
+		);
+
+		if (customerExists.rows.length > 0) {
+			res.sendStatus(409);
+			return;
+		}
+
 		await connection.query(
 			`
 		INSERT INTO customers (name, phone, cpf, birthday)
@@ -63,6 +77,27 @@ export async function insertCustomer(req, res) {
 		);
 
 		res.sendStatus(201);
+	} catch (err) {
+		console.log(err);
+		res.sendStatus(500);
+	}
+}
+
+export async function updateCustomer(req, res) {
+	const { name, phone, cpf, birthday } = req.body;
+	const { id } = req.params;
+
+	try {
+		await connection.query(
+			`
+		UPDATE customers 
+		SET name=$2, phone=$3, cpf=$4, birthday=$5
+		WHERE id = $1;
+		`,
+			[id, name, phone, cpf, birthday]
+		);
+
+		res.sendStatus(200);
 	} catch (err) {
 		console.log(err);
 		res.sendStatus(500);

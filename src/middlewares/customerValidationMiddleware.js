@@ -12,24 +12,24 @@ export async function customerValidation(req, res, next) {
 		return;
 	}
 
-	try {
-		const customerExists = await connection.query(
-			`
-        SELECT cpf
-        FROM customers
-        WHERE cpf = $1
-        `,
-			[cpf]
-		);
+	// try {
+	// 	const customerExists = await connection.query(
+	// 		`
+	//     SELECT cpf
+	//     FROM customers
+	//     WHERE cpf = $1
+	//     `,
+	// 		[cpf]
+	// 	);
 
-		if (customerExists.rows.length > 0) {
-			res.sendStatus(409);
-			return;
-		}
-	} catch (err) {
-		console.log(err);
-		res.sendStatus(500);
-	}
+	// 	if (customerExists.rows.length > 0) {
+	// 		res.sendStatus(409);
+	// 		return;
+	// 	}
+	// } catch (err) {
+	// 	console.log(err);
+	// 	res.sendStatus(500);
+	// }
 
 	next();
 }
